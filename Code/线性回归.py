@@ -40,12 +40,18 @@ def set_figsize(figsize=(3.5, 2.5)):
 
 
 def data_iter(batch_size, features, labels):
-    num_examples = len(features)
-    indices = list(range(num_examples))
-    random.shuffle(indices)
+    """
+    :param batch_size:
+    :param features: 特征数据
+    :param labels: 标签
+    :return:
+    """
+    num_examples = len(features)  # 获取特征数据长度
+    indices = list(range(num_examples))  # 生成下标列表
+    random.shuffle(indices)  # 打乱列表
     for i in range(0, num_examples, batch_size):
-        j = nd.array(indices[i: min(i + batch_size, num_examples)])
-        yield features.take(j), labels.take(j)
+        j = nd.array(indices[i: min(i + batch_size, num_examples)])  # 取数据
+        yield features.take(j), labels.take(j)  # 返回数据，和标签
 
 
 batch_size = 10
@@ -75,6 +81,11 @@ def linreg(x, w, b):
 
 
 def squared_loss(y_hat, y):
+    """
+    :param y_hat: 预测值
+    :param y: 真实值，标签
+    :return:
+    """
     return (y_hat - y.reshape(y_hat.shape)) ** 2 / 2
 
 
@@ -100,7 +111,7 @@ for epoch in range(num_epochs):
     for x, y in data_iter(batch_size, features, labels):
         with autograd.record():
             l = loss(net(x, w, b), y)
-        l.backward()
+        l.backward()  # 计算函数l的梯度
         sgd([w, b], lr, batch_size)
     train_l = loss(net(features, w, b), labels)
     print('epoch%d, loss%f' % (epoch + 1, train_l.mean().asnumpy()))

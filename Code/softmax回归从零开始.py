@@ -19,7 +19,8 @@ def softmax(x):
     """
     构造softmax函数
     :param x:
-    :return:
+    :return: 返回的是batch_size行元素，每行有num_outputs个元素
+
     对矩阵做指数运算得x_exp,然后求x_exp每行的和，
     返回每行各个元素除每行的和：x_exp/ partition。
     这保证了矩阵每行元素和为1,且不为负

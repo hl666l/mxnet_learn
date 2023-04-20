@@ -8,13 +8,16 @@ import random
 """
 生成数据集
 """
-num_inputs = 2
-num_examples = 1000
-true_w = [2, -3.4]
-true_b = 4.2
-features = nd.random.normal(scale=1, shape=(num_examples, num_inputs))
-labels = true_w[0] * features[:, 0] + true_w[1] * features[:, 1] + true_b
-labels += nd.random.normal(scale=0.01, shape=labels.shape)
+num_inputs = 2  # 每个样本有两个数据
+num_examples = 1000  # 样本数量
+
+true_w = [2, -3.4]  # 权重
+true_b = 4.2  # 偏差
+
+# y = w1*x + w2*x2 + b + c
+features = nd.random.normal(scale=1, shape=(num_examples, num_inputs))  # 随机生成全部样本
+labels = true_w[0] * features[:, 0] + true_w[1] * features[:, 1] + true_b  # 生成标签y
+labels += nd.random.normal(scale=0.01, shape=labels.shape)  # 增加一些噪声， 噪声服从均值为0, 标准差为0.01的正态分布。
 print(features[0], labels[0])
 
 
@@ -24,11 +27,16 @@ def use_svg_display():
 
 def set_figsize(figsize=(3.5, 2.5)):
     use_svg_display()
-    plt.rcParams['figure.figsize'] = figsize
+    plt.rcParams['figure.figsize'] = figsize  # 设置图片尺寸
 
 
 # set_figsize()
 # plt.scatter(features[:, 1].asnumpy(), labels.asnumpy(), 1);
+
+
+"""
+加载数据函数，每次返回随机的十个数据
+"""
 
 
 def data_iter(batch_size, features, labels):
@@ -41,11 +49,14 @@ def data_iter(batch_size, features, labels):
 
 
 batch_size = 10
+# 测试一下数据加载函数
 for x, y in data_iter(batch_size, features, labels):
     print(x, y)
     break
+#  初始化我们的权重，偏置，噪声
 w = nd.random.normal(scale=0.01, shape=(num_inputs, 1))
 b = nd.zeros(shape=(1,))
+# 声明我们需要计算那几个变量的梯度
 w.attach_grad()
 b.attach_grad()
 
@@ -82,7 +93,7 @@ def sgd(params, lr, batch_size):
 """
 
 lr = 0.03
-num_epochs = 3
+num_epochs = 10
 net = linreg
 loss = squared_loss
 for epoch in range(num_epochs):

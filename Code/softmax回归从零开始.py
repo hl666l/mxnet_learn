@@ -38,7 +38,7 @@ def net(x):
     注意x.reshape((-1, num_inputs))，-1是因为此时 x 的值是batch_size个num_inputs,
     但是若最后一个batch数目不够batch_size，则会出错。故用-1,让系统判断该取何值。
     """
-    return softmax(nd.dot(x.reshape((-1, num_inputs)), w) + b)
+    return softmax(nd.dot(x.reshape((-1, num_inputs)).as_nd_ndarray(), w) + b)
 
 
 def cross_entropy(y_hat, y):
@@ -48,7 +48,7 @@ def cross_entropy(y_hat, y):
     :param y:
     :return: 交叉熵损失函数
     """
-    return -nd.pick(y_hat, y).log()
+    return -nd.pick(y_hat.as_nd_ndarray(), y.as_nd_ndarray()).log()
 
 
 def accuracy(y_hat, y):
@@ -77,7 +77,7 @@ def evaluate_accuracy(data_iter, net):
     acc_sum, n = 0.0, 0
     for x, y in data_iter:
         y = y.astype('float32')
-        acc_sum += (net(x).argmax(axis=1) == y).sum().asscalar()
+        acc_sum += (net(x).argmax(axis=1) == y).sum()
         n += y.size
     return acc_sum / n
 
@@ -111,7 +111,7 @@ def tain_ch3(net, train_iter, test_iter, loss, num_epochs, batch_size, params=No
                 trainer.step(batch_size)
             y = y.astype('float32')
             train_l_sum += l.asscalar()
-            train_acc_sum += (y_hat.argmax(axis=1) == y).sum().asscalar()  # asscalar()将向量转成标量
+            train_acc_sum += (y_hat.argmax(axis=1) == y).sum()
             n += y.size
         test_acc = evaluate_accuracy(test_iter, net)
         print('epoch %d, loss %.4f, train_acc_sum %.3f, test_acc %.3f' % (epoch + 1,

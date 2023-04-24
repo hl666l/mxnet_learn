@@ -13,7 +13,7 @@ fashion_mnist, 是28x28的图片，2828 = 784.故输入是784
 """
 train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size)  # 加载数据
 num_inputs, num_outputs, num_hiddens = 784, 10, 256  # 输入数， 输出数， 隐藏层
-
+# normal是通过(loc=0.0, scale=1.0, size=None)这三个参数来调整生成的不同 “均值、标准差和维度” 样本数据。
 w1 = nd.random.normal(scale=0.01, shape=(num_inputs, num_hiddens))  # 随机生成权重w1，第一层计算的权重
 b1 = nd.zeros(num_hiddens)  # 生成偏置
 w2 = nd.random.normal(scale=0.01, shape=(num_hiddens, num_outputs))   # 随机生成权重w2，第二层计算时的权重

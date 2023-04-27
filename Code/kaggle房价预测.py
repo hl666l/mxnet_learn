@@ -64,7 +64,7 @@ def train(net, train_features, train_labels, test_features, test_labels,
     # Adam优化算法
     trainer = gluon.Trainer(net.collect_params(), 'adam', {'learning_rate': learning_rate, 'wd': weight_decay})
     for epoch in range(num_epochs):
-        for x, y in trainer:
+        for x, y in train_iter:
             with autograd.record():
                 l = loss(net(x), y)
             l.backward()
@@ -74,3 +74,4 @@ def train(net, train_features, train_labels, test_features, test_labels,
             test_ls.append(log_rms(net, test_features, test_labels))
     return train_ls, test_ls
 
+# k折交叉验证

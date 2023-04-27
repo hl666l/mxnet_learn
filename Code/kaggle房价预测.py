@@ -66,7 +66,7 @@ def train(net, train_features, train_labels, test_features, test_labels,
     trainer = gluon.Trainer(net.collect_params(), 'adam', {'learning_rate': learning_rate, 'wd': weight_decay})
     for epoch in range(num_epochs):
         for x, y in train_iter:
-            with autograd.record():
+            with autograd.record():  # 在autograd.record()作用域下定义函数有助于自动求梯度。
                 l = loss(net(x), y)
             l.backward()
             trainer.step(batch_size)

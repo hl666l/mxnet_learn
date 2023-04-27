@@ -59,9 +59,10 @@ def log_rms(net, features, labels):
 
 def train(net, train_features, train_labels, test_features, test_labels,
           num_epochs, learning_rate, weight_decay, batch_size):
-    train_ls, test_ls = [], []
+    train_ls, test_ls = [], []  # 训练损失，测试损失。
+    # 制作DataLoader类型数据集
     train_iter = gdata.DataLoader(gdata.ArrayDataset(train_features, train_labels), batch_size, shuffle=True)
-    # Adam优化算法
+    # 初始化训练的优化函数Adam优化算法，学习率，权重
     trainer = gluon.Trainer(net.collect_params(), 'adam', {'learning_rate': learning_rate, 'wd': weight_decay})
     for epoch in range(num_epochs):
         for x, y in train_iter:
@@ -69,9 +70,9 @@ def train(net, train_features, train_labels, test_features, test_labels,
                 l = loss(net(x), y)
             l.backward()
             trainer.step(batch_size)
-        train_ls.append(log_rms(net, train_features, train_labels))
+        train_ls.append(log_rms(net, train_features, train_labels))  # 一个epoch训练完之后的，将所有训练数据扔进网络求对数均方根误差
         if test_labels is not None:
-            test_ls.append(log_rms(net, test_features, test_labels))
-    return train_ls, test_ls
+            test_ls.append(log_rms(net, test_features, test_labels))  # 每训练一个epoch,计算测试误差
+    return train_ls, test_ls  # 返回训练误差list， 测试误差list
 
 # k折交叉验证

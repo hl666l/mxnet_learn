@@ -75,4 +75,51 @@ def train(net, train_features, train_labels, test_features, test_labels,
             test_ls.append(log_rms(net, test_features, test_labels))  # 每训练一个epoch,计算测试误差
     return train_ls, test_ls  # 返回训练误差list， 测试误差list
 
+
 # k折交叉验证
+def get_k_fold_data(k, i, x, y):
+    assert k > 1
+    fold_size = x.shape[0] // k
+    x_train, y_train = None, None
+    for j in range(k):
+        idx = slice(j * fold_size, (j + 1) * fold_size)
+        x_part, y_part = x[idx, :], y[idx]
+        if j == i:
+            x_valid, y_valid = x_part, y_part
+        elif x_train is None:
+            x_train, y_train = x_part, y_part
+        else:
+            x_train = nd.concat(x_train, x_part, dim=0)
+            y_train = nd.concat(y_train, y_part, dim=0)
+    return x_train, y_train, x_valid, y_valid
+
+
+def k_fold(k, x_train, y_train, num_epochs, learning_rate, weight_decay, batch_size):
+    train_l_sum, valid_l_sum = 0, 0
+    for i in range(k):
+        data = get_k_fold_data(k, i, x_train, y_train)
+        net = get_net()
+        train_ls, valid_ls = train(net, *data, num_epochs, learning_rate, weight_decay, batch_size)
+        train_l_sum += train_ls[-1]
+        valid_l_sum += valid_ls[-1]
+        if i == 0:
+            d2l.semilogy(range(1, num_epochs + 1), train_ls, 'epochs', 'rmse', range(1, num_epochs + 1), valid_ls, ['train', 'valid'])
+            print('fold %d, train rmse %f, valid rmse %f' % (i, train_ls[-1], valid_ls[-1]))
+
+    return train_l_sum / k, valid_l_sum / k
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

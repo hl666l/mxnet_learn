@@ -78,17 +78,28 @@ def train(net, train_features, train_labels, test_features, test_labels,
 
 # k折交叉验证
 def get_k_fold_data(k, i, x, y):
-    assert k > 1
-    fold_size = x.shape[0] // k
-    x_train, y_train = None, None
-    for j in range(k):
-        idx = slice(j * fold_size, (j + 1) * fold_size)
-        x_part, y_part = x[idx, :], y[idx]
-        if j == i:
+    """
+    :param k:数据分成 K份
+    :param i: 第几次交叉，用来决定第几份数据做验证集
+    :param x:特征数据
+    :param y:标签数据
+    :return:
+    """
+    assert k > 1  # 判断k是否大于1,否则无意义
+    fold_size = x.shape[0] // k  # 获取数据分成k份，每份有多少个标本。 // 相除取整操作
+    x_train, y_train = None, None  # 用来存储
+    for j in range(k):  # 循环切片。当j与 i
+        idx = slice(j * fold_size, (j + 1) * fold_size)  # 作切片slice[开始,结束] 返回
+        x_part, y_part = x[idx, :], y[idx]  # 保留切割下来的作为测试部分的数据
+        if j == i:  # 若j=i则此时的 x_part, y_part是测试部分数据。用x_valid, y_valid
             x_valid, y_valid = x_part, y_part
         elif x_train is None:
             x_train, y_train = x_part, y_part
         else:
+            """
+            将每次切割的测试集部分连接到x_train后面。当i=j时不连接，用x_valid, y_valid保存。
+            这样经过k次切割后x_train, y_train保存的就是除切割部分的其它数据。
+            """
             x_train = nd.concat(x_train, x_part, dim=0)
             y_train = nd.concat(y_train, y_part, dim=0)
     return x_train, y_train, x_valid, y_valid
@@ -105,7 +116,6 @@ def k_fold(k, x_train, y_train, num_epochs, learning_rate, weight_decay, batch_s
         if i == 0:
             d2l.semilogy(range(1, num_epochs + 1), train_ls, 'epochs', 'rmse', range(1, num_epochs + 1), valid_ls, ['train', 'valid'])
             print('fold %d, train rmse %f, valid rmse %f' % (i, train_ls[-1], valid_ls[-1]))
-
     return train_l_sum / k, valid_l_sum / k
 
 

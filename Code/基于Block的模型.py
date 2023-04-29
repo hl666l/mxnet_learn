@@ -48,7 +48,7 @@ class MySequential(nn.Block):
 
 
 net = MySequential()
-#  添加Block实例来创建net网络
+#  添加Block实例来创建net网络模型
 net.add(nn.Dense(256, activation='relu'))  # 添加Block实例
 net.add(nn.Dense(10))  # 添加Block实例
 net.initialize()

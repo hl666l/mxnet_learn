@@ -72,7 +72,7 @@ def train(net, train_features, train_labels, test_features, test_labels,
             trainer.step(batch_size)
         train_ls.append(log_rms(net, train_features, train_labels))  # 一个epoch训练完之后的，将所有训练数据扔进网络求对数均方根误差
         if test_labels is not None:
-            test_ls.append(log_rms(net, test_features, test_labels))  # 每训练一个epoch,计算测试误差
+            test_ls.append(log_rms(net, test_features, test_labels))  # 每训练一个epoch,计算测试误差，并将其添加到list末尾
     return train_ls, test_ls  # 返回训练误差list， 测试误差list
 
 
@@ -83,7 +83,7 @@ def get_k_fold_data(k, i, x, y):
     :param i: 第几次交叉，用来决定第几份数据做验证集
     :param x:特征数据
     :param y:标签数据
-    :return:
+    :return:  训练集， 测试集
     """
     assert k > 1  # 判断k是否大于1,否则无意义
     fold_size = x.shape[0] // k  # 获取数据分成k份，每份有多少个标本。 // 相除取整操作
@@ -110,7 +110,7 @@ def k_fold(k, x_train, y_train, num_epochs, learning_rate, weight_decay, batch_s
     for i in range(k):
         data = get_k_fold_data(k, i, x_train, y_train)
         net = get_net()
-        train_ls, valid_ls = train(net, *data, num_epochs, learning_rate, weight_decay, batch_size)
+        train_ls, valid_ls = train(net, *data, num_epochs, learning_rate, weight_decay, batch_size)  # 训练误差 测试误差
         train_l_sum += train_ls[-1]
         valid_l_sum += valid_ls[-1]
         if i == 0:
@@ -125,13 +125,29 @@ k, num_epochs, lr, weight_decay, batch_size = 5, 100, 5, 0, 64
 
 # 训练并预测
 def train_and_pred(train_features, test_features, train_labels, test_data, num_epochs, lr, weight_decay, batch_size):
+    """
+    :param train_features:
+    :param test_features:
+    :param train_labels:
+    :param test_data: test_labels
+    :param num_epochs:
+    :param lr:
+    :param weight_decay: 权重衰减
+    :param batch_size:
+    :return:
+    """
     net = get_net()
+    # 训练模型
     train_ls, _ = train(net, train_features, train_labels, None, None, num_epochs, lr, weight_decay, batch_size)
     d2l.semilogy(range(1, num_epochs + 1), train_ls, 'epochs', 'rmse')
     print('train rmse %f' % train_ls[-1])
+    # 用测试数据预测
     preds = net(test_features).asnumpy()
+    # 保存测试数据
     test_data['SalePrice'] = pd.Series(preds.reshape(1, -1)[0])
+    # 将测试数据的ID号与预测结果的连接起来。
     submission = pd.concat([test_data['Id'], test_data['SalePrice']], axis=1)
+    # 保存成csv文件，不加行号。提交给kaggle网站
     submission.to_csv('submission.csv', index=False)
 
 

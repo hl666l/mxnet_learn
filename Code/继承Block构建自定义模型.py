@@ -80,6 +80,41 @@ class FancyMLP(nn.Block):
 net = FancyMLP()
 net.initialize()
 print(net(x))
+"""
+因为FancyMLP和Sequential都是Block的子类，
+所以我们可以嵌套调用他们。
+
+"""
+class NestMLP(nn.Block):
+    def __init__(self):
+        super(NestMLP, self).__init__()
+        self.net = nn.Sequential()
+        self.net.add(nn.Dense(64, activation='relu'),
+                     nn.Dense(32,  activation='relu'))
+        self.dense = nn.Dense(16, activation='relu')
+
+    def forward(self, x):
+        return self.dense(self.net(x))
+"""
+可以把Dense, Block的每一个子类，Sequential看成一个网络模型的部件。
+使用add()可以将这些子类连接起来。
+"""
+net = nn.Sequential()
+net.add(NestMLP(), nn.Dense(20), FancyMLP())
+net.initialize()
+net(x)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

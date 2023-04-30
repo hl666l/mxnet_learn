@@ -26,3 +26,5 @@ print('第一个输出：',net[0].params, '第一个的第二个输出：',type(
 print('第二个输出：',net[0].params['dense0_weight'],'第二个的第二个输出', net[0].weight)
 
 print('第三个输出：',net[0].weight.data())
+
+

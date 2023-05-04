@@ -10,8 +10,8 @@ import numpy as np
 import pandas as pd
 
 # 读取数据
-train_data = pd.read_csv('/home/helei/PycharmProjects/mxnet_learn/data/train.csv')
-test_data = pd.read_csv('/home/helei/PycharmProjects/mxnet_learn/data/test.csv')
+train_data = pd.read_csv('/data/train.csv')
+test_data = pd.read_csv('/data/test.csv')
 
 # print(len(train_data))
 # print(len(test_data))
